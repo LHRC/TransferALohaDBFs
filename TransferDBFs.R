@@ -1,5 +1,5 @@
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, foreign, RCurl, zip, here)
+pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL)
 
 here::here()
 zipFolder <- paste(here(), "/zips", sep = "")

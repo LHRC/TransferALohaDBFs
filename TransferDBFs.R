@@ -1,23 +1,32 @@
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL)
 
-here::here()
-zipFolder <- paste(here(), "/zips", sep = "")
+source(paste(here(), "/functions.R", sep = ""))
+
+con <- getDBConnection()
+
+#AlohaPath <- "C:/BootDrv/Aloha"
+AlohaPath <- paste(here(),"/data", sep = "")
 
 
-AlohaPath <- "C:/Aloha"
+#datesToImport <- getDatesToImport()
 
-
-if (! file.exists(zipFolder)){
-  dir.create(zipFolder)
-} 
 
 folders <- list.dirs(AlohaPath) # this assumes being in the main folder, otherwise specify the path
-folders <- folders[grepl("\d{8}"), folders]
+folders <- folders[grepl("\\d{8}", folders)]
 
-for (f in folders ) {
-  print(f)
-  zip(zipfile = paste(zipFolder, f, sep = ""), files = list.files(f))
+for (folder in folders ) {
+  bname <- basename(folder)
+  folderDate <- as.Date(bname, format = "%Y%m%d")
+  ini <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
+  rNum <- as.integer( ini[ini$V1 == "UNITNUMBER",]["V2"])
+  entityNumber <- getEntityId(rNum, con)
+  if(! importExistsInDB(folderDate, entityNumber, con)){
+    print("import")
+  }
+  
+  #print(rName)
 }
-#Aloha.ini
-#UNITNAME=Bones
+
+
+dbDisconnect(con)

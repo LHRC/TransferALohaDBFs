@@ -4,8 +4,9 @@ getDBConnection <- function() {
   db_port <- "5432"
 
   creds <- read.csv2(paste(here(), "/creds.txt", sep = ""), sep = ",", header = FALSE)
-  db_user <- creds[creds$V1 == "db_user",]["V2"]
-  db_pass <- creds[creds$V1 == "db_pass",]["V2"]
+  db_user <- as.character(creds[creds$V1 == "db_user",]["V2"])
+
+  db_pass <- as.character(creds[creds$V1 == "db_pass",]["V2"])
   print(creds)
   print(db_user)
   print(db_pass)

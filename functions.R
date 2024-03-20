@@ -11,11 +11,6 @@ getDBConnection <- function() {
   print(db_user)
   print(db_pass)
   
-  
-  # db_user <- "inventory"
-  # db_pass <- "1261#Lhrc!3423.Brg"
-  
-  
   con <- dbConnect(RPostgres::Postgres(), dbname = db, host = db_host, port = db_port, user = db_user, password = db_pass)
   con
 }

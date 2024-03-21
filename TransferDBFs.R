@@ -13,9 +13,10 @@ AlohaPath <- paste(here(),"/data", sep = "")
 
 
 folders <- list.dirs(AlohaPath) # this assumes being in the main folder, otherwise specify the path
-folders <- folders[grepl("\\d{8}", folders)]
+folders <- folders[grepl("/\\d{8}$", folders)]
 
 for (folder in folders ) {
+  print(folder)
   bname <- basename(folder)
   folderDate <- as.Date(bname, format = "%Y%m%d")
   ini <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
@@ -23,10 +24,10 @@ for (folder in folders ) {
   entityNumber <- getEntityId(rNum, con)
   if(! importExistsInDB(folderDate, entityNumber, con)){
     print("import")
+    #insertAlohaDBF(folderDate,  folder, entityNumber, con)
   }
   
   #print(rName)
 }
-
 
 dbDisconnect(con)

@@ -4,11 +4,11 @@ getDBConnection <- function() {
   db_port <- "5432"
 
   creds <- read.csv2(paste(here(), "/creds.txt", sep = ""), sep = ",", header = FALSE)
-  #print(creds)
+  # print(creds)
   db_user <- as.character(creds[creds$V1 == "db_user", ]["V2"])
   db_pass <- as.character(creds[creds$V1 == "db_pass", ]["V2"])
-  #print(db_user)
-  #print(db_pass)
+  # print(db_user)
+  # print(db_pass)
   con <- dbConnect(RPostgres::Postgres(), dbname = db, host = db_host, port = db_port, user = db_user, password = db_pass)
   con
 }
@@ -24,7 +24,7 @@ getEntityId <- function(alohaId, con) {
 #
 # }
 
-getAlohaDataSourceId <- function(con){
+getAlohaDataSourceId <- function(con) {
   query <- "select data_import_source_id from data_import_sources where lower(data_import_source_name) = 'aloha'"
   df <- dbGetQuery(con, query)
   df[[1]]
@@ -32,7 +32,7 @@ getAlohaDataSourceId <- function(con){
 
 importExistsInDB <- function(date, entity, con) {
   query <- paste("select count(*) from data_imports where import_date = '", date, sep = "")
-  query <- paste(query, "' and import_source_id = ", getAlohaDataSourceId(con) , sep = "")
+  query <- paste(query, "' and import_source_id = ", getAlohaDataSourceId(con), sep = "")
   query <- paste(query, "and entity_id = ", entity, sep = "")
   df <- dbGetQuery(con, query)
   df[[1]] > 0
@@ -46,39 +46,40 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
     expr = {
       print(paste("grind date", grindDate))
       dbBegin(con)
-      maxImportIdQuery <- paste("select max(data_import_id) from data_imports where entity_id = ", entityNumber, " and import_source_id = ", dataSourceID) 
-      previousImportId <- dbGetQuery(con, maxImportIdQuery)[1,1]
+      maxImportIdQuery <- paste("select max(data_import_id) from data_imports where entity_id = ", entityNumber, " and import_source_id = ", dataSourceID)
+      previousImportId <- dbGetQuery(con, maxImportIdQuery)[1, 1]
       insertQuery <- paste("insert into data_imports (entity_id, import_source_id, import_date) values (", entityNumber, ", ", dataSourceID, ", '", grindDate, "')", sep = "")
       dataImportRecord <- dbExecute(con, insertQuery)
-      
+
       result <- dbGetQuery(con, maxImportIdQuery)
       dataImportID <- result[1, 1]
       print(paste("prev", previousImportId, "new", dataImportID))
-      
+
       ##### if import record was inserted
-      if(dataImportId > previousImportId){}
-      dbf_files <- list.files(path = folder, pattern = "\\.dbf", ignore.case = TRUE, full.names = TRUE, recursive = FALSE)
-      for (f in dbf_files) {
-        fname <- fs::path_ext_remove(f)
-        fname <- tolower(fs::path_file(fname))
-        table <- paste("alohadbf_", tolower(fname), sep = "")
-        dbf <- read.dbf(f, as.is = T)
-        colnames(dbf) <- tolower(colnames(dbf))
-        dbf <- dbf %>% select(!contains("hash", ignore.case = TRUE))
-        dbf <- dbf %>% select(!contains("ssn", ignore.case = TRUE))
-        dbf <- dbf %>% select(!contains("loyalty", ignore.case = TRUE))
-        dbf <- dbf %>% mutate(grind_date = grindDate, entity_id = entityNumber, data_import_id = dataImportID)
-        dbWriteTable(
-          con,
-          table,
-          dbf,
-          row.names = FALSE,
-          overwrite = FALSE,
-          append = TRUE,
-          field.types = NULL,
-          temporary = FALSE,
-          copy = TRUE
-        )
+      if (dataImportID > previousImportId) {
+        dbf_files <- list.files(path = folder, pattern = "\\.dbf", ignore.case = TRUE, full.names = TRUE, recursive = FALSE)
+        for (f in dbf_files) {
+          fname <- fs::path_ext_remove(f)
+          fname <- tolower(fs::path_file(fname))
+          table <- paste("alohadbf_", tolower(fname), sep = "")
+          dbf <- read.dbf(f, as.is = T)
+          colnames(dbf) <- tolower(colnames(dbf))
+          dbf <- dbf %>% select(!contains("hash", ignore.case = TRUE))
+          dbf <- dbf %>% select(!contains("ssn", ignore.case = TRUE))
+          dbf <- dbf %>% select(!contains("loyalty", ignore.case = TRUE))
+          dbf <- dbf %>% mutate(grind_date = grindDate, entity_id = entityNumber, data_import_id = dataImportID)
+          dbWriteTable(
+            con,
+            table,
+            dbf,
+            row.names = FALSE,
+            overwrite = FALSE,
+            append = TRUE,
+            field.types = NULL,
+            temporary = FALSE,
+            copy = TRUE
+          )
+        }
       }
     },
     error = function(e) {

@@ -15,6 +15,8 @@ AlohaPath <- paste(here(),"/data", sep = "")
 folders <- list.dirs(AlohaPath) # this assumes being in the main folder, otherwise specify the path
 folders <- folders[grepl("/\\d{8}$", folders)]
 
+dataSourceID <- getAlohaDataSourceId(con)
+
 for (folder in folders ) {
   print(folder)
   bname <- basename(folder)
@@ -24,7 +26,8 @@ for (folder in folders ) {
   entityNumber <- getEntityId(rNum, con)
   if(! importExistsInDB(folderDate, entityNumber, con)){
     print("import")
-    #insertAlohaDBF(folderDate,  folder, entityNumber, con)
+    print(paste(folderDate,  folder, entityNumber, dataSourceID))
+    #insertAlohaDBF(folderDate,  folder, entityNumber, DataSourceID, con)
   }
   
   #print(rName)

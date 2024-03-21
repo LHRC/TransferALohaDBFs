@@ -39,20 +39,23 @@ importExistsInDB <- function(date, entity, con) {
 }
 
 
-insertGrindFiles <- function(grindDate, folder, entityNumber, con) {
+insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con) {
   isError <- FALSE
 
   tryCatch(
     expr = {
-      dataSourceID <- getAlohaDataSourceId(con)
       print(paste("grind date", grindDate))
       dbBegin(con)
-      previousImportId <- dbGetQuery(con, "select max(data_import_id) from data_imports")[1,1]
+      maxImportIdQuery <- paste("select max(data_import_id) from data_imports where entity_id = ", entityNumber, " and import_source_id = ", dataSourceID) 
+      previousImportId <- dbGetQuery(con, maxImportIdQuery)[1,1]
       insertQuery <- paste("insert into data_imports (entity_id, import_source_id, import_date) values (", entityNumber, ", ", dataSourceID, ", '", grindDate, "')", sep = "")
       dataImportRecord <- dbExecute(con, insertQuery)
-      result <- dbGetQuery(con, "select max(data_import_id) from data_imports")
+      
+      result <- dbGetQuery(con, maxImportIdQuery)
       dataImportID <- result[1, 1]
       print(paste("prev", previousImportId, "new", dataImportID))
+      
+      ##### if import record was inserted
       if(dataImportId > previousImportId){}
       dbf_files <- list.files(path = folder, pattern = "\\.dbf", ignore.case = TRUE, full.names = TRUE, recursive = FALSE)
       for (f in dbf_files) {

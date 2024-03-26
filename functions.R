@@ -39,7 +39,18 @@ folderIsValid <- function(){
   
 }
 
-deleteImportRecord <- function(importId){
+deleteImportRecord <- function(importId, con){
+  query1 <- "select table_schema,table_name from information_schema.tables "
+  query1 <- paste(query1, "where table_name like 'alohadbf%' ", sep = "")
+  query1 <- paste(query1, "and table_schema not in ('information_schema', 'pg_catalog') " , sep = "")
+  query1 <- paste(query1, " and table_type = 'BASE TABLE' order by table_name, table_schema;", sep = "")
+  df <- dbGetQuery(con, query1)
+  for(row in 1:nrow(df)){
+    tableName <- df[row, "table_name"]
+    print(tableName)
+  }
+  #query2 <- str::glue("delete from {} where data_import_id = {}")
+  #query3 <- str::glue("delete from data_imports where data_import_id = {}")
   
 }
 

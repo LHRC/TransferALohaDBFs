@@ -39,6 +39,10 @@ folderIsValid <- function(){
   
 }
 
+deleteImportRecord <- function(importId){
+  
+}
+
 getEntityId <- function(alohaId, con) {
   query <- paste("select entity_id from entities where aloha_id = ", alohaId, sep = "")
   df <- dbGetQuery(con, query)

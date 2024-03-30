@@ -3,7 +3,6 @@ pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL)
 
 baseDir <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/scripts", .default = here())
 
-
 source(paste(baseDir, "/functions.R", sep = ""))
 
 con <- getDBConnection()
@@ -12,14 +11,12 @@ AlohaPath <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/BootDrv/Aloha"
 #AlohaPath <- "C:/BootDrv/Aloha"
 #AlohaPath <- paste(here(),"/data", sep = "")
 
-
-#datesToImport <- getDatesToImport()
-
-
 folders <- list.dirs(AlohaPath) # this assumes being in the main folder, otherwise specify the path
 folders <- folders[grepl("/\\d{8}$", folders)]
 
 dataSourceID <- getAlohaDataSourceId(con)
+
+existingImports <- getExistingImportRecords(dataSourceID, con)
 
 for (folder in folders ) {
   if(folderIsValid(folder)){

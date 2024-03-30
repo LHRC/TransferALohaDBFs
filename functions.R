@@ -35,6 +35,10 @@ getExistingImportRecords <- function(dataSourceID, con){
   result <- dbGetQuery(con, query)
 }
 
+importRecordExists <- function(DF, date, entityId){
+  DF %>% filter(entity_id == entityId, import_date == date) %>% count() > 0
+}
+
 importRecordIsComplete <- function(){
   
 }

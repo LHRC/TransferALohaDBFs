@@ -26,6 +26,9 @@ for (folder in folders ) {
     ini <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
     rNum <- as.integer( ini[ini$V1 == "UNITNUMBER",]["V2"])
     entityNumber <- getEntityId(rNum, con)
+    
+    print(paste(folderDate, importRecordExists(existingImports, folderDate, entityNumber)))
+    print(importExistsInDB(folderDate, entityNumber, con))
     if(! importExistsInDB(folderDate, entityNumber, con)){
       print("import")
       print(paste(folderDate,  folder, entityNumber, dataSourceID))

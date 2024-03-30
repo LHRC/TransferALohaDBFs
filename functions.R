@@ -28,8 +28,8 @@ getCurrentFileLocation <-  function()
 }
 
 getExistingImportRecords <- function(dataSourceID, con){
-  query <- "select di.data_import_id, di.entity_id, di.import_date, count(l.*) from data_imports di "
-  query <- paste( query, "inner join alohadbf_gndline l on l.data_import_id ", sep ="")
+  query <- "select di.data_import_id, di.entity_id, di.import_date, count(i.*) from data_imports di "
+  query <- paste( query, "inner join alohadbf_gnditem i on i.data_import_id ", sep ="")
   query <- paste( query, "= di.data_import_id where di.import_source_id = ", dataSourceID, sep ="")
   query <- paste( query, " group by di.data_import_id, di.entity_id, di.import_date")
   result <- dbGetQuery(con, query)

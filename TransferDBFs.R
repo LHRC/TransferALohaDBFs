@@ -32,7 +32,7 @@ for (folder in folders ) {
     if(! importExistsInDB(folderDate, entityNumber, con)){
       print("import")
       print(paste(folderDate,  folder, entityNumber, dataSourceID))
-      insertGrindFiles(folderDate,  folder, entityNumber, dataSourceID, con)
+      #insertGrindFiles(folderDate,  folder, entityNumber, dataSourceID, con)
     }
   }
 }

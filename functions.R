@@ -35,10 +35,6 @@ importRecordIsComplete <- function(){
   
 }
 
-folderIsValid <- function(){
-  
-}
-
 deleteImportRecord <- function(importId, con){
   query1 <- "select table_schema,table_name from information_schema.tables "
   query1 <- paste(query1, "where table_name like 'alohadbf%' ", sep = "")
@@ -79,6 +75,21 @@ importExistsInDB <- function(date, entity, con) {
   df[[1]] > 0
 }
 
+
+folderIsValid <- function(folder){
+  isValid <- FALSE
+  ini <- paste(folder, "/Aloha.ini", sep = "")
+  line <- paste(folder, "/GNDLINE.dbf", sep = "") 
+  
+  if(file.exists(ini) & file.exists(line) & file.size(line) > 500){
+    iniDF <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
+    rNum <- as.integer( iniDF[iniDF$V1 == "UNITNUMBER",]["V2"])
+    if(! is.na(rNum)){
+      isValid = TRUE
+    }
+  }
+  isValid
+}
 
 insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con) {
   isError <- FALSE

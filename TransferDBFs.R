@@ -11,13 +11,13 @@ AlohaPath <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/BootDrv/Aloha"
 #AlohaPath <- "C:/BootDrv/Aloha"
 #AlohaPath <- paste(here(),"/data", sep = "")
 
-folders <- list.dirs(AlohaPath) # this assumes being in the main folder, otherwise specify the path
-folders <- folders[grepl("/\\d{8}$", folders)]
 
 dataSourceID <- getAlohaDataSourceId(con)
 
 existingImports <- getExistingImportRecords(dataSourceID, con)
 
+folders <- list.dirs(AlohaPath, recursive = FALSE) # this assumes being in the main folder, otherwise specify the path
+folders <- folders[grepl("/\\d{8}$", folders)]
 for (folder in folders ) {
   if(folderIsValid(folder)){
     print(folder)

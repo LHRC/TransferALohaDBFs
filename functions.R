@@ -89,7 +89,7 @@ folderIsValid <- function(folder){
   ini <- paste(folder, "/Aloha.ini", sep = "")
   line <- paste(folder, "/GNDLINE.dbf", sep = "") 
   
-  if(file.exists(ini) & file.exists(line) & file.size(line) > 500){
+  if(file.exists(ini) & file.exists(line) & file.size(line) > 1000){
     iniDF <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
     rNum <- as.integer( iniDF[iniDF$V1 == "UNITNUMBER",]["V2"])
     if(! is.na(rNum)){
@@ -109,6 +109,7 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
       maxImportIdQuery <- paste("select max(data_import_id) from data_imports where entity_id = ", entityNumber, " and import_source_id = ", dataSourceID)
       previousImportId <- dbGetQuery(con, maxImportIdQuery)[1, 1]
       insertQuery <- paste("insert into data_imports (entity_id, import_source_id, import_date) values (", entityNumber, ", ", dataSourceID, ", '", grindDate, "')", sep = "")
+      print("insert di record")
       dataImportRecord <- dbExecute(con, insertQuery)
 
       result <- dbGetQuery(con, maxImportIdQuery)
@@ -152,6 +153,7 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
     warning = function(w) {
       print("warning")
       print(w)
+      dbCommit(con)
     }
   )
   if (isError) {

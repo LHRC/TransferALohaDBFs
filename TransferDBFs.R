@@ -1,6 +1,12 @@
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL)
 
+repair <- "-repair" %in% commandArgs()
+if(repair){
+   print("repair mode")
+}
+
+
 baseDir <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/scripts", .default = here())
 
 source(paste(baseDir, "/functions.R", sep = ""))

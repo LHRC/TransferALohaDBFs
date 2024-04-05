@@ -26,8 +26,8 @@ existingImports <- getExistingImportRecords(dataSourceID, con)
 
 folders <- list.dirs(AlohaPath, recursive = FALSE)
 folders <- folders[grepl("/\\d{8}$", folders)]
+print(folders)
 temp <- as.Date(sub('^\\S+([0-9]{8})', '\\1', folders), "%Y%m%d")
-print(temp)
 folders <- folders[order(temp, decreasing = TRUE)]
 print(folders)
 

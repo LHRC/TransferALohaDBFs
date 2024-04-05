@@ -1,5 +1,7 @@
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL)
+pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL, gtools)
+
+readRenviron(".Renviron")
 
 repair <- "-repair" %in% commandArgs()
 if(repair){
@@ -22,8 +24,13 @@ dataSourceID <- getAlohaDataSourceId(con)
 
 existingImports <- getExistingImportRecords(dataSourceID, con)
 
-folders <- list.dirs(AlohaPath, recursive = FALSE) # this assumes being in the main folder, otherwise specify the path
+folders <- list.dirs(AlohaPath, recursive = FALSE)
 folders <- folders[grepl("/\\d{8}$", folders)]
+temp <- as.Date(sub('^\\S+([0-9]{8})', '\\1', folders), "%Y%m%d")
+print(temp)
+folders <- folders[order(temp, decreasing = TRUE)]
+print(folders)
+
 for (folder in folders ) {
   if(folderIsValid(folder)){
     print(folder)

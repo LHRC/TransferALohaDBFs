@@ -3,10 +3,8 @@ getDBConnection <- function() {
   db_host <- "blueridgegrill.cxond9zlkmhk.us-east-1.rds.amazonaws.com"
   db_port <- "5432"
 
-  creds <- read.csv2(paste(here(), "/creds.txt", sep = ""), sep = ",", header = FALSE)
-  # print(creds)
-  db_user <- as.character(creds[creds$V1 == "db_user", ]["V2"])
-  db_pass <- as.character(creds[creds$V1 == "db_pass", ]["V2"])
+  db_user <- Sys.getenv('db_user')
+  db_pass <- Sys.getenv('db_pass')
   # print(db_user)
   # print(db_pass)
   con <- dbConnect(RPostgres::Postgres(), dbname = db, host = db_host, port = db_port, user = db_user, password = db_pass)

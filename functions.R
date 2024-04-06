@@ -113,7 +113,7 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
       result <- dbGetQuery(con, maxImportIdQuery)
       dataImportID <- result[1, 1]
       print(paste("prev", previousImportId, "new", dataImportID))
-      if (dataImportID > previousImportId) {
+      if (dataImportID <= previousImportId) {
         dbBreak()
         isError <- TRUE
       }
@@ -143,7 +143,7 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
       }
     }
   )
-  ! isError
+  
 
   # tryCatch(
   #   expr = {

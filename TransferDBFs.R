@@ -31,6 +31,7 @@ temp <- as.Date(sub('^\\S+([0-9]{8})', '\\1', folders), "%Y%m%d")
 folders <- folders[order(temp, decreasing = TRUE)]
 print(folders)
 
+
 for (folder in folders ) {
   if(folderIsValid(folder)){
     print(folder)

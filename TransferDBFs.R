@@ -10,6 +10,7 @@ if(repair){
 
 
 baseDir <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/scripts", .default = here())
+readRenviron(paste(baseDir, "/.Renviron"))
 
 source(paste(baseDir, "/functions.R", sep = ""))
 

@@ -1,5 +1,5 @@
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL, gtools)
+pacman::p_load(tidyverse, foreign, RCurl, zip, here, DBI, RPostgreSQL, gtools, RPostgres)
 
 readRenviron(".Renviron")
 
@@ -10,7 +10,7 @@ if(repair){
 
 
 baseDir <- case_when(Sys.info()[['sysname']] == "Windows" ~ "c:/scripts", .default = here())
-readRenviron(paste(baseDir, "/.Renviron"))
+readRenviron(paste(baseDir, "/.Renviron", sep = ""))
 
 source(paste(baseDir, "/functions.R", sep = ""))
 

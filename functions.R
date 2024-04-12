@@ -5,8 +5,6 @@ getDBConnection <- function() {
 
   db_user <- Sys.getenv('db_user')
   db_pass <- Sys.getenv('db_pass')
-  # print(db_user)
-  # print(db_pass)
   con <- dbConnect(RPostgres::Postgres(), dbname = db, host = db_host, port = db_port, user = db_user, password = db_pass)
   con
 }
@@ -103,16 +101,12 @@ insertGrindFiles <- function(grindDate, folder, entityNumber, dataSourceID, con)
   dbWithTransaction(
     con,
     {
-      print(paste("grind date", grindDate))
       maxImportIdQuery <- paste("select max(data_import_id) from data_imports where entity_id = ", entityNumber, " and import_source_id = ", dataSourceID)
       previousImportId <- dbGetQuery(con, maxImportIdQuery)[1, 1]
       insertQuery <- paste("insert into data_imports (entity_id, import_source_id, import_date) values (", entityNumber, ", ", dataSourceID, ", '", grindDate, "')", sep = "")
-      print("insert DI record")
       dataImportRecord <- dbExecute(con, insertQuery)
-
       result <- dbGetQuery(con, maxImportIdQuery)
       dataImportID <- result[1, 1]
-      print(paste("prev", previousImportId, "new", dataImportID))
       if (dataImportID <= previousImportId) {
         dbBreak()
         isError <- TRUE

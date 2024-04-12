@@ -27,26 +27,21 @@ existingImports <- getExistingImportRecords(dataSourceID, con)
 
 folders <- list.dirs(AlohaPath, recursive = FALSE)
 folders <- folders[grepl("/\\d{8}$", folders)]
-print(folders)
 temp <- as.Date(sub('^\\S+([0-9]{8})', '\\1', folders), "%Y%m%d")
 folders <- folders[order(temp, decreasing = TRUE)]
-print(folders)
 
 
 for (folder in folders ) {
   if(folderIsValid(folder)){
-    print(folder)
+    #print(folder)
     bname <- basename(folder)
     folderDate <- as.Date(bname, format = "%Y%m%d")
     ini <- read.csv2(paste(folder, "/Aloha.ini", sep = ""), sep = "=", skip = 1, header = FALSE)
     rNum <- as.integer( ini[ini$V1 == "UNITNUMBER",]["V2"])
     entityNumber <- getEntityId(rNum, con)
-    
-    print(paste(folderDate, importRecordExists(existingImports, folderDate, entityNumber)))
-    print(importExistsInDB(folderDate, entityNumber, con))
+
     if(! importExistsInDB(folderDate, entityNumber, con)){
-      print("import")
-      print(paste(folderDate,  folder, entityNumber, dataSourceID))
+ 
       insertGrindFiles(folderDate,  folder, entityNumber, dataSourceID, con)
     }
   }
